@@ -1,0 +1,13 @@
+# Java
+target/
+*.log
+
+# Node
+node_modules/
+
+# Flutter
+.build/
+.dart_tool/
+
+# OS
+.DS_Store
