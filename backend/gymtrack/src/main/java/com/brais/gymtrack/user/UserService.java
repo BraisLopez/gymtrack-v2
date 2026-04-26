@@ -3,15 +3,17 @@ package com.brais.gymtrack.user;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 public class UserService {
     
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -21,7 +23,9 @@ public class UserService {
             throw new IllegalArgumentException("This email is in use");
         }
         
-        User user = new User(email, passwordHash, role);
+        String encodedPassword = passwordEncoder.encode(passwordHash);
+
+        User user = new User(email, encodedPassword, role);
 
         return userRepository.save(user);
     }

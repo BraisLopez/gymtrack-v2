@@ -1,15 +1,11 @@
 -- Initial schema setup for GymTrack app
---ENUMS
-CREATE TYPE user_role AS ENUM ('ADMIN', 'TRAINER', 'CLIENT');
-CREATE TYPE membership_level AS ENUM ('BASIC', 'PREMIUM');
-CREATE TYPE routine_level AS ENUM ('BEGINNER', 'INTERMEDIATE', 'ADVANCED');
 
 -- Base Table for Profiles (Clients and Trainers)
 CREATE TABLE users (
     user_id BIGSERIAL PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
-    role user_role NOT NULL,
+    role VARCHAR(30) NOT NULL CHECK (role IN ('ADMIN', 'TRAINER', 'CLIENT')),
     active BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -20,7 +16,7 @@ CREATE TABLE memberships (
     name VARCHAR(255) NOT NULL UNIQUE,
     price DECIMAL(5, 2) NOT NULL,
     duration_days INT NOT NULL,
-    level membership_level NOT NULL,
+    level VARCHAR(30) NOT NULL CHECK (level IN ('BASIC', 'PREMIUM')),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -97,9 +93,9 @@ CREATE TABLE routines(
     trainer_id BIGINT NOT NULL REFERENCES trainer_profiles(trainer_id) ON DELETE CASCADE,
     name VARCHAR(255) NOT NULL,
     description VARCHAR(255),
-    level routine_level NOT NULL,
+    level VARCHAR(30) NOT NULL CHECK (level IN ('BEGINNER', 'INTERMEDIATE', 'ADVANCED')),
     estimated_duration_minutes INT NOT NULL CHECK (estimated_duration_minutes > 0),
-    required_membership_level membership_level NOT NULL,
+    required_membership_level VARCHAR(30) NOT NULL CHECK (required_membership_level IN ('BASIC', 'PREMIUM')),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (trainer_id, name)
 );
