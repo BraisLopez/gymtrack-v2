@@ -12,6 +12,8 @@ import com.brais.gymtrack.user.User;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 
 @Service
 public class JwtService {
@@ -39,6 +41,30 @@ public class JwtService {
                 .expiration(expiration) //Agrega la fecha de expiración al token
                 .signWith(getSignInKey()) //Firma el token con la clave secreta
                 .compact(); //Genera el token y lo devuelve como una cadena
+    }
+
+
+    private Claims extractAllClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(getSignInKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
+
+    public String extractEmail(String token){
+        return extractAllClaims(token).getSubject();
+    }
+
+
+    private boolean isTokenExpired(String token){
+        Date expiration = extractAllClaims(token).getExpiration();
+        return expiration.before(new Date());
+    }
+
+    public boolean isTokenValid(String token, User user){
+        String email = extractEmail(token);
+        return email.equals(user.getEmail()) && !isTokenExpired(token);
     }
     
 }
