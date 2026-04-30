@@ -13,7 +13,6 @@ import com.brais.gymtrack.user.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
 
 @Service
 public class JwtService {

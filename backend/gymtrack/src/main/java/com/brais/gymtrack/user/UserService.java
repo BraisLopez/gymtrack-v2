@@ -18,12 +18,12 @@ public class UserService {
 
 
 
-    public User createUser(String email, String passwordHash, UserRole role){
+    public User createUser(String email, String password, UserRole role){
         if(userRepository.findByEmail(email).isPresent()){
             throw new IllegalArgumentException("This email is in use");
         }
         
-        String encodedPassword = passwordEncoder.encode(passwordHash);
+        String encodedPassword = passwordEncoder.encode(password);
 
         User user = new User(email, encodedPassword, role);
 
