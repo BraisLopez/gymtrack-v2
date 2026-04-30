@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.brais.gymtrack.exception.customExceptions.BadRequestException;
 import com.brais.gymtrack.user.User;
 import com.brais.gymtrack.user.UserRole;
 import com.brais.gymtrack.user.UserService;
@@ -29,8 +30,8 @@ public class AdminUserController{
     @PreAuthorize("hasRole('ADMIN')")
     public UserResponse createAdminUser(@RequestBody @Valid CreateUserRequest request) {
 
-        if(request.getRole() == null || request.getRole().equals(UserRole.ADMIN)) {
-            throw new IllegalArgumentException("Role must be specified and cannot be ADMIN");
+        if(request.getRole().equals(UserRole.ADMIN)) {
+            throw new BadRequestException("Role cannot be ADMIN");
         }
 
         User user = userService.createUser(

@@ -3,6 +3,10 @@ package com.brais.gymtrack.user;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+
+import com.brais.gymtrack.exception.customExceptions.EmailAlreadyExistsException;
+import com.brais.gymtrack.exception.customExceptions.UserNotFoundException;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
@@ -20,7 +24,7 @@ public class UserService {
 
     public User createUser(String email, String password, UserRole role){
         if(userRepository.findByEmail(email).isPresent()){
-            throw new IllegalArgumentException("This email is in use");
+            throw new EmailAlreadyExistsException(email);
         }
         
         String encodedPassword = passwordEncoder.encode(password);
@@ -38,13 +42,13 @@ public class UserService {
 
     public User getUserById(Long id){
         return userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(id));
     }
 
 
     public User getUserByEmail(String email){
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(email));
     }
 
     public User deactivateUser(Long id){
