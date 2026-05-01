@@ -18,9 +18,15 @@ import com.brais.gymtrack.auth.JwtAuthenticationFilter;
 public class SecurityConfig {
     
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+
+    public SecurityConfig(
+        JwtAuthenticationFilter jwtAuthenticationFilter,
+        CustomAuthenticationEntryPoint customAuthenticationEntryPoint
+    ) {
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.customAuthenticationEntryPoint = customAuthenticationEntryPoint;
     }
 
     @Bean
@@ -35,6 +41,9 @@ public class SecurityConfig {
             .formLogin(form -> form.disable())
             .httpBasic(basic -> basic.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .exceptionHandling(exception -> exception
+                .authenticationEntryPoint(customAuthenticationEntryPoint)
+            )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.POST,"/api/users").permitAll()

@@ -1,6 +1,7 @@
 package com.brais.gymtrack.auth;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -12,11 +13,19 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.brais.gymtrack.user.User;
 import com.brais.gymtrack.user.UserRepository;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+
+/**
+ * Reads the JWT token from the Authorization header and authenticates the user.
+ *
+ * Expected header:
+ * Authorization: Bearer <token>
+ */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
@@ -41,28 +50,51 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        String token = authHeader.substring(7); // Elimina "Bearer " del inicio del token
-        String email = jwtService.extractEmail(token);
+        String token = authHeader.substring(7); // Removes "Bearer " from token
 
-        if(email != null && SecurityContextHolder.getContext().getAuthentication() == null){
-            User user = userRepository.findByEmail(email).orElse(null);
+        //Now fixed so it protects corrupted/invalid tokens
+        try{
+            String email = jwtService.extractEmail(token);
 
-            if(user != null && jwtService.isTokenValid(token, user)){
-                var authorities = List.of(
-                        new SimpleGrantedAuthority("ROLE_" + user.getRole().name())
-                );
-                var authToken = new UsernamePasswordAuthenticationToken(
-                    user,
-                    null,
-                    authorities
-                );
+            if(email != null && SecurityContextHolder.getContext().getAuthentication() == null){
+                User user = userRepository.findByEmail(email).orElse(null);
 
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                if(user != null && jwtService.isTokenValid(token, user)){
+                    var authorities = List.of(
+                            new SimpleGrantedAuthority("ROLE_" + user.getRole().name())
+                    );
+                    var authToken = new UsernamePasswordAuthenticationToken(
+                        user,
+                        null,
+                        authorities
+                    );
 
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+
+                }
             }
-        }
 
-        filterChain.doFilter(request, response);
+            filterChain.doFilter(request, response);
+
+        }catch(JwtException ex){
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+
+            String body = """
+            {
+                "timestamp": "%s",
+                "status": 401,
+                "error": "Unauthorized",
+                "message": "Invalid or expired token",
+                "path": "%s"
+            }
+            """.formatted(
+                LocalDateTime.now().toString(),
+                request.getRequestURI()
+            );
+            response.getWriter().write(body);
+        }
     }
 
 }
