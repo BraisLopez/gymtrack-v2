@@ -11,6 +11,8 @@ public class UserResponse {
     private String email;
     private UserRole role;
     private boolean active;
+    private boolean mustChangePassword;
+    private boolean onboardingCompleted;
     private LocalDateTime createdAt;
 
     public UserResponse(User user) {
@@ -18,6 +20,8 @@ public class UserResponse {
         this.email = user.getEmail();
         this.role = user.getRole();
         this.active = user.isActive();
+        this.mustChangePassword = user.isMustChangePassword();
+        this.onboardingCompleted = user.isOnboardingCompleted();
         this.createdAt = user.getCreatedAt();
     }
 
@@ -35,6 +39,14 @@ public class UserResponse {
 
     public boolean isActive() {
         return active;
+    }
+
+    public boolean isMustChangePassword(){
+        return mustChangePassword;
+    }
+
+    public boolean isOnboardingCompleted(){
+        return onboardingCompleted;
     }
 
     public LocalDateTime getCreatedAt() {

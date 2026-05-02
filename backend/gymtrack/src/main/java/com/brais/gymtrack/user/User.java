@@ -34,9 +34,14 @@ public class User {
     @Column(nullable = false)
     private Boolean active = true;
 
+    @Column(name = "must_change_password", nullable = false)
+    private Boolean mustChangePassword = true;
+    
+    @Column(name = "onboarding_completed", nullable = false)
+    private Boolean onboardingCompleted = false;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
-
 
     public User() {}
 
@@ -74,6 +79,14 @@ public class User {
         return active;
     }
 
+    public Boolean isMustChangePassword(){
+        return mustChangePassword;
+    }
+
+    public Boolean isOnboardingCompleted(){
+        return onboardingCompleted;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -96,6 +109,14 @@ public class User {
 
     public void setActive(Boolean active) {
         this.active = active;
+    }
+
+    public void setMustChangePassword(Boolean mustChangePassword){
+        this.mustChangePassword = mustChangePassword;
+    }
+
+    public void setOnboardingCompleted(Boolean onBoardingCompleted){
+        this.onboardingCompleted = onBoardingCompleted;
     }
 
 }

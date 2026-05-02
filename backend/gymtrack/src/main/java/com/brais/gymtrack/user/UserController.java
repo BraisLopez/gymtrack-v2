@@ -17,20 +17,7 @@ public class UserController {
 
     public UserController(UserService userService) {
         this.userService = userService;
-    }
-
-    //CREATE
-    @PostMapping
-    public UserResponse createUser(@RequestBody @Valid CreateUserRequest request) {
-        User user = userService.createUser(
-            request.getEmail(),
-            request.getPassword(),
-            UserRole.CLIENT
-        );
-
-        return new UserResponse(user);
-    }
-    
+    }    
 
     //GET ALL
     @GetMapping
