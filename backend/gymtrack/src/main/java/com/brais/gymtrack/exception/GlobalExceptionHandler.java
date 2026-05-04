@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.brais.gymtrack.exception.customExceptions.BadRequestException;
 import com.brais.gymtrack.exception.customExceptions.EmailAlreadyExistsException;
 import com.brais.gymtrack.exception.customExceptions.InvalidCredentialsException;
+import com.brais.gymtrack.exception.customExceptions.InvalidCurrentPasswordException;
 import com.brais.gymtrack.exception.customExceptions.UserNotFoundException;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -157,5 +158,23 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+    }
+
+    /**
+     * Handles password change attempts with an incorrect current password.
+     */
+    @ExceptionHandler(InvalidCurrentPasswordException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidCurrentPasswordException(
+        InvalidCurrentPasswordException ex,
+        HttpServletRequest request
+    ){
+        ErrorResponse error = new ErrorResponse(
+            HttpStatus.BAD_REQUEST.value(),
+            HttpStatus.BAD_REQUEST.getReasonPhrase(), 
+            ex.getMessage(), 
+            request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 }
