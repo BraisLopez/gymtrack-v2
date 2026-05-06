@@ -33,6 +33,12 @@ public class AuthController {
         );
     }
 
+
+    /**
+     * Allows the authenticated user to change their password.
+     * This endpoint is role independent, because any authenticated
+     * user should be able to change their password, regardless of their role.
+     */
     @PatchMapping("/change-password")
     public ResponseEntity<Void> changePassword(
         @AuthenticationPrincipal User user,

@@ -1,5 +1,5 @@
 package com.brais.gymtrack.client.dto;
 
-public class ClientProfileResume {
+public class ClientProfileResponse {
     
 }

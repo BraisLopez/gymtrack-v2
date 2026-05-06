@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.brais.gymtrack.exception.customExceptions.BadRequestException;
+import com.brais.gymtrack.exception.customExceptions.ClientNotFoundException;
+import com.brais.gymtrack.exception.customExceptions.ClientProfileAlreadyExistsException;
 import com.brais.gymtrack.exception.customExceptions.EmailAlreadyExistsException;
 import com.brais.gymtrack.exception.customExceptions.InvalidCredentialsException;
 import com.brais.gymtrack.exception.customExceptions.InvalidCurrentPasswordException;
@@ -176,5 +178,41 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
+    /**
+     * Handles attempts to create a client profile when one already exists for the same user.
+     */
+    @ExceptionHandler(ClientProfileAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleClientProfileAlreadyExistsException(
+        ClientProfileAlreadyExistsException ex,
+        HttpServletRequest request
+    ){
+        ErrorResponse error = new ErrorResponse(
+            HttpStatus.CONFLICT.value(),
+            HttpStatus.CONFLICT.getReasonPhrase(), 
+            ex.getMessage(), 
+            request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
+    /**
+     * Handles client profile lookup failures.
+     */
+    @ExceptionHandler(ClientNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleClientNotFoundException(
+        ClientNotFoundException ex,
+        HttpServletRequest request
+    ){
+        ErrorResponse error = new ErrorResponse(
+            HttpStatus.NOT_FOUND.value(),
+            HttpStatus.NOT_FOUND.getReasonPhrase(), 
+            ex.getMessage(), 
+            request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 }

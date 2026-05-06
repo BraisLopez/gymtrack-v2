@@ -4,10 +4,7 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.*;
 
-import com.brais.gymtrack.user.dto.CreateUserRequest;
 import com.brais.gymtrack.user.dto.UserResponse;
-
-import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/users")
